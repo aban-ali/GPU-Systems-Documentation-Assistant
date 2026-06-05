@@ -17,27 +17,23 @@ files = [
 
 
 def parse():
-    f = open(RAW_OUTPUT_FILEPATH, "a")
+    with open(RAW_OUTPUT_FILEPATH, "w") as f:
+        for file in files:
+            filepath = path.join("data", "pdf_data", file)
+            doc = fitz.open(filepath)
 
-    for file in files:
-        filepath = path.join("data", "pdf_data", file)
-        doc = fitz.open(filepath)
+            for page, content in enumerate(doc, start=1):
+                text = content.get_text()
+                text = " ".join(text.split())
+                length = len(text.split())
 
-        for page, content in enumerate(doc, start=1):
-            text = content.get_text()
-            text = " ".join(text.split())
-            length = len(text.split())
-
-            data = {
-                "doc": file[:-4], "page":page, "text": text, 
-                "length": length, "source": filepath
-                }
-            
-            f.write(json.dumps(data))
-            f.write("\n")
-        doc.close()
-
-    f.close()
+                data = {
+                    "doc": file[:-4], "page":page, "text": text, 
+                    "length": length, "source": filepath
+                    }
+                
+                f.write(json.dumps(data) + "\n")
+            doc.close()
     
 
 if __name__ == "__main__":
