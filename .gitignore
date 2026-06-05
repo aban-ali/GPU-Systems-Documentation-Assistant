@@ -1,6 +1,6 @@
 # dataset things that will be deleted later
 wget-log
-*data/raw/*
+data/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
