@@ -1,8 +1,14 @@
 import fitz
-from os import path, listdir
+import re
+import pymupdf4llm
+from os import path
+# from os import listdir
 import json
 
 RAW_OUTPUT_FILEPATH = path.join("data", "processed", "raw_data.jsonl")
+PATTERN_END = re.compile(r"#+\s(\*\*)?[\d\.\s]+Notice(\*\*)?")
+PATTERN_INVALID_LINE1 = re.compile(r"\(([a-zA-Z]+\s){3}[a-zA-Z]+\)")
+PATTERN_INVALID_LINE2 = re.compile(r"\*\*^[a-zA-Z].*\*\*")
 
 # # This is supposed to be used later
 # files = listdir(path("data", "pdf_data"))
@@ -15,8 +21,47 @@ files = [
     "ptx_isa_9.3.pdf"
 ]
 
+def is_invalid_line(line):
+    return PATTERN_INVALID_LINE1.fullmatch(line) or \
+                PATTERN_INVALID_LINE2.fullmatch(line)
 
-def parse():
+def is_new_chapter(line):
+    return re.fullmatch(r"#+\s(\*\*)?Chapter\s.+(\*\*)?", line)
+
+def smarter_parse():
+    with open(RAW_OUTPUT_FILEPATH, "w") as f:
+        for file in files:
+            filepath = path.join("data", "pdf_data", file)
+            doc = pymupdf4llm.to_markdown(filepath, header=False, footer=False).split("\n\n")
+            data = {
+                "doc": file[:-4], "chapter": "",  "text": ""
+                }
+            text = ""
+            pre = True
+
+            for line in doc:
+                if pre and not re.match(r"## (\*\*)?Chapter 1(\*\*)?", line.strip()):
+                    continue
+                if PATTERN_END.fullmatch(line):
+                    text = ""
+                    break 
+
+                pre = False
+                
+                if is_invalid_line(line):
+                    continue
+                if is_new_chapter(line):
+                    if text and data["chapter"]:
+                        data["text"] = text.strip()
+                        f.write(json.dumps(data) + "\n")
+                    data["chapter"] = re.search(r"Chapter\s.*", line.strip()).group(0)
+                    data["chapter"] = data["chapter"][:-2] if data["chapter"].endswith("**") else data["chapter"]
+                    text = ""
+                    continue
+
+                text += "\n\n" + line.strip()
+
+def simple_parse():
     with open(RAW_OUTPUT_FILEPATH, "w") as f:
         for file in files:
             filepath = path.join("data", "pdf_data", file)
@@ -37,4 +82,5 @@ def parse():
     
 
 if __name__ == "__main__":
-    parse()
+    # simple_parse()
+    smarter_parse()
