@@ -12,7 +12,7 @@ def create_embeddings(model):
     with open(INPUT_FILEPATH, "r") as f:
         for line in f:
             chunk = json.loads(line)
-            texts.append(chunk["chunk"])
+            texts.append(chunk["text"])
 
     embeddings = model.encode(
         texts,

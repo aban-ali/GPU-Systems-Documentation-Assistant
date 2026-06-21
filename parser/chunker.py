@@ -74,13 +74,13 @@ def smart_markdown_chunk(chunk_size=500, overlap=50):
                             data["chunk_id"] = f"{raw_data["doc"]}_chapter{chapter}_c{chunk_idx}"
                             data["subheading"] = chunk["subheading"]
                             data["length"] = chunk["length"]
-                            data["chunk"] = chunk["text"]
+                            data["text"] = chunk["text"]
                             data["chunk_idx"] = chunk_idx
                             o.write(json.dumps(data) + "\n")
                             chunk_idx += 1
                     else:
                         if text:
-                            data["chunk"] = text
+                            data["text"] = text
                             data["chunk_idx"] = chunk_idx
                             o.write(json.dumps(data) + "\n")
                             chunk_idx += 1
@@ -98,13 +98,13 @@ def smart_markdown_chunk(chunk_size=500, overlap=50):
                             data["chunk_id"] = f"{raw_data["doc"]}_chapter{chapter}_c{chunk_idx}"
                             data["subheading"] = chunk["subheading"]
                             data["length"] = chunk["length"]
-                            data["chunk"] = chunk["text"]
+                            data["text"] = chunk["text"]
                             data["chunk_idx"] = chunk_idx
                             o.write(json.dumps(data) + "\n")
                             chunk_idx += 1
                     else:
                         if text:
-                            data["chunk"] = text
+                            data["text"] = text
                             data["chunk_idx"] = chunk_idx
                             o.write(json.dumps(data) + "\n")
                             chunk_idx += 1
@@ -115,7 +115,7 @@ def smart_markdown_chunk(chunk_size=500, overlap=50):
                 text += line + "\n"
                 data["length"] += len(line.split(" "))
             if text:
-                data["chunk"] = text
+                data["text"] = text
                 data["chunk_idx"] = chunk_idx
                 o.write(json.dumps(data) + "\n")
 
