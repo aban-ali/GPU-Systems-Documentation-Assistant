@@ -50,4 +50,4 @@ if __name__ == "__main__":
             f"score={r.score:.4f}"
         )
         print("\n")
-        print(r.payload["chunk"])
+        print(r.payload["text"])
