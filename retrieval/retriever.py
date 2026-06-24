@@ -21,7 +21,29 @@ class Retriever:
         )
         self.collection_name = "cuda-docs"
 
-    def search(self, query, k=5):
+    @staticmethod
+    def build_text(retrieved_docs: list) -> str:
+        """
+        Build a text string from the retrieved documents.
+        """
+        text = ""
+        for i, doc in enumerate(retrieved_docs.points, start=1):
+            text += f"""
+[
+    Source: {i},
+    File: {doc.payload['source']},
+    Chapter: {doc.payload['chapter']}
+    Topic: {doc.payload['heading'] if doc.payload['heading'] else 'Introduction'},
+    Text:
+{doc.payload["text"]}
+]"""
+        return text
+
+
+    def search(self, query, k=3):
+        """
+        Retrieve chunks from vector DB.
+        """
         query_embedding = self.model.encode(
             [query],
             convert_to_numpy=True
@@ -34,6 +56,7 @@ class Retriever:
             with_payload=True
         )
         return results
+
 
 
 if __name__ == "__main__":
