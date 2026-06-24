@@ -51,7 +51,8 @@ def smart_markdown_chunk(chunk_size=500, overlap=50):
             chunk_idx = 1
             data = {
                 "source": raw_data["doc"], "length": 0,
-                "heading": None, "subheading": None
+                "chapter": raw_data["chapter"], "heading": None, 
+                "subheading": None
             }
             text = ""
 
